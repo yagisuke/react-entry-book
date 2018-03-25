@@ -8,7 +8,14 @@
     "start": "webpack-dev-server",
     "webpack": "webpack -d"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yagisuke/react-yuumi3-book.git"
+  },
+  "keywords": [
+    "react",
+    "webpack"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
