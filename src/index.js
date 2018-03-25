@@ -33,7 +33,7 @@ class JyankenGamePage extends Component {
 
     return (
       <Fragment>
-        <h1>じゃんけん PON!!</h1>
+        <Title>じゃんけん PON!!</Title>
         <JyankenBox actionPon={(hand) => this.pon(hand)} />
         <ScoreBox human={human} computer={computer} judgment={this.judge()} />
       </Fragment>
@@ -168,33 +168,18 @@ class MoneyEntry extends Component {
   }
 
   onChangeText(event) {
-    console.log(event.target.name)
-    console.log(event.target.value)
     this.setState({[event.target.name]: event.target.value})
   }
 
   onChangePayingIn(event) {
-    console.log(event.target.value)
     this.setState({payingIn: event.target.value === 'on'})
   }
 
   onClickSubmit() {
     const {date, item, amount, payingIn } = this.state
-    console.log(date)
-    console.log(item)
-    console.log(amount * (payingIn ? 1 : -1))
 
-    this.props.add(
-      date,
-      item,
-      amount * (payingIn ? 1 : -1)
-    )
-    this.setState({
-      date: '',
-      item: '',
-      amount: '',
-      payingIn: false
-    })
+    this.props.add(date, item, amount * (payingIn ? 1 : -1))
+    this.setState({date: '', item: '', amount: '', payingIn: false})
   }
 
   render() {
