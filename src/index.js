@@ -113,6 +113,7 @@ class MoneyBook extends Component {
         <Title>お小遣い帳</Title>
         <MoneyBookList books={this.state.books} />
         <MoneyEntry add={(date, item, amount) => this.addBook(date, item, amount)} />
+        <MoneyEntry2 add={(date, item, amount) => this.addBook(date, item, amount)} />
       </Fragment>
     )
   }
@@ -179,7 +180,7 @@ class MoneyEntry extends Component {
     const {date, item, amount, payingIn } = this.state
 
     this.props.add(date, item, amount * (payingIn ? 1 : -1))
-    this.setState({date: '', item: '', amount: '', payingIn: false})
+    this.setState({date: '', item: '', amount: '', payingIn})
   }
 
   render() {
@@ -188,48 +189,17 @@ class MoneyEntry extends Component {
         <fieldset>
           <legend>記帳</legend>
           <div>
-            <input
-              type='radio'
-              value='on'
-              checked={this.state.payingIn}
-              onChange={(e) => this.onChangePayingIn(e)}
-              />
-            <input
-              type='radio'
-              value='off'
-              checked={!this.state.payingIn}
-              onChange={(e) => this.onChangePayingIn(e)}
-              />
+            入金<input type='radio' value='on' checked={this.state.payingIn} onChange={(e) => this.onChangePayingIn(e)} />
+            出金<input type='radio' value='off' checked={!this.state.payingIn} onChange={(e) => this.onChangePayingIn(e)} />
           </div>
           <div>
-            日付:
-            <input
-              type='text'
-              name='date'
-              value={this.state.text}
-              onChange={(e) => this.onChangeText(e)}
-              placeholder='3/15'
-              />
+            日付:<input type='text' name='date' value={this.state.date} onChange={(e) => this.onChangeText(e)} placeholder='3/15' />
           </div>
           <div>
-            項目:
-            <input
-              type='text'
-              name='item'
-              value={this.state.item}
-              onChange={(e) => this.onChangeText(e)}
-              placeholder='お小遣い'
-              />
+            項目:<input type='text' name='item' value={this.state.item} onChange={(e) => this.onChangeText(e)} placeholder='お小遣い' />
           </div>
           <div>
-            金額:
-            <input
-              type='text'
-              name='amount'
-              value={this.state.amount}
-              onChange={(e) => this.onChangeText(e)}
-              placeholder='1000'
-              />
+            金額:<input type='text' name='amount' value={this.state.amount} onChange={(e) => this.onChangeText(e)} placeholder='1000' />
           </div>
           <div>
             <input type='submit' value='追加' onClick={() => this.onClickSubmit()} />
@@ -241,6 +211,64 @@ class MoneyEntry extends Component {
 }
 
 MoneyEntry.propTypes = {
+  add: PropTypes.func.isRequired
+}
+
+class MoneyEntry2 extends Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      date: null,
+      item: null,
+      amount: null,
+      payingIn: null
+    }
+  }
+
+  onClickSubmit() {
+    this.props.add(
+      this.date.value,
+      this.item.value,
+      this.amount.value * (this.payingIn.checked ? 1 : -1)
+    )
+
+    this.setState({
+      date: '',
+      item: '',
+      amount: '',
+      payingIn: ''
+    })
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <fieldset>
+          <legend>記帳</legend>
+          <div>
+            入金<input type='radio' defaultChecked name='payingIn' ref={(node) => this.payingIn = node} />
+            出金<input type='radio' name='payingIn' />
+          </div>
+          <div>
+            日付:<input type='text' defaultValue='' ref={(node) => this.date = node} placeholder='3/15' />
+          </div>
+          <div>
+            項目:<input type='text' defaultValue='' ref={(node) => this.item = node} placeholder='お小遣い' />
+          </div>
+          <div>
+            金額:<input type='text' defaultValue='' ref={(node) => this.amount = node} placeholder='1000' />
+          </div>
+          <div>
+            <input type='submit' value='追加' onClick={() => this.onClickSubmit()} />
+          </div>
+        </fieldset>
+      </Fragment>
+    )
+  }
+}
+
+MoneyEntry2.propTypes = {
   add: PropTypes.func.isRequired
 }
 
