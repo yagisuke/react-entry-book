@@ -75,21 +75,23 @@ JyankenBox.propTypes = {
   actionPon: PropTypes.func.isRequired
 }
 
-const ScoreList = (props) => (
-  <Table>
-    <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-      <TableRow>
-        <TableHeaderColumn>時間</TableHeaderColumn>
-        <TableHeaderColumn>人間</TableHeaderColumn>
-        <TableHeaderColumn>コンピューター</TableHeaderColumn>
-        <TableHeaderColumn>結果</TableHeaderColumn>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {props.scores.map((score, i) => <ScoreListItem key={i} score={score} />)}
-    </TableBody>
-  </Table>
-)
+const ScoreList = (props) => {
+  return (
+    <Table>
+      <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
+        <TableRow>
+          <TableHeaderColumn>時間</TableHeaderColumn>
+          <TableHeaderColumn>人間</TableHeaderColumn>
+          <TableHeaderColumn>コンピューター</TableHeaderColumn>
+          <TableHeaderColumn>結果</TableHeaderColumn>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {props.scores.map((score, i) => <ScoreListItem key={i} score={score} />)}
+      </TableBody>
+    </Table>
+  )
+}
 
 ScoreList.propTypes = {
   scores: PropTypes.array
