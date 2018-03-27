@@ -1,53 +1,73 @@
-import React, { Component, Fragment } from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
+import React, { Component, Fragment } from 'react'
+import ReactDOM from 'react-dom'
+import PropTypes from 'prop-types'
+import Jyanken from './Jyanken'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import RaisedButton from 'material-ui/RaisedButton'
+import Paper from 'material-ui/Paper'
+import { Tabs, Tab } from 'material-ui/Tabs'
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
 
 class JyankenGamePage extends Component {
   constructor(props) {
     super(props)
 
+    this.jyanken = new Jyanken()
     this.state = {
-      human: null,
-      computer: null
+      scores: [],
+      status: {},
+      tabIndex: 0
     }
   }
 
-  pon(humanHand) {
-    const computerHand = Math.floor(Math.random() * 3)
-
-    this.setState({
-      human: humanHand,
-      computer: computerHand
-    })
+  componentDidMount() {
+    this.getResult()
   }
 
-  judge() {
-    const { human, computer } = this.state
+  tabChange(i) {
+    this.setState({tabIndex: i})
+    this.getResult()
+  }
 
-    if (human === null) return null
-    return (computer - human + 3) % 3
+  getResult() {
+    this.setState({scores: this.jyanken.getScores()})
+    this.setState({status: this.jyanken.getStatuses()})
+  }
+
+  pon(hand) {
+    this.jyanken.pon(hand)
+    this.getResult()
   }
 
   render() {
-    const { human, computer } = this.state
-
     return (
-      <Fragment>
-        <Title>じゃんけん PON!!</Title>
-        <JyankenBox actionPon={(hand) => this.pon(hand)} />
-        <ScoreBox human={human} computer={computer} judgment={this.judge()} />
-      </Fragment>
+      <MuiThemeProvider>
+        <div>
+          <Title>じゃんけん PON!!</Title>
+          <JyankenBox actionPon={(hand) => this.pon(hand)} />
+          <Paper style={{width: 600}} zDepth={2}>
+            <Tabs value={this.state.tabIndex} onChange={ix => this.tabChange(ix)}>
+              <Tab label='対戦結果' value={0}>
+                <ScoreList scores={this.state.scores} />
+              </Tab>
+              <Tab label='対戦成績' value={1}>
+                <StatusBox status={this.state.status} />
+              </Tab>
+            </Tabs>
+          </Paper>
+        </div>
+      </MuiThemeProvider>
     )
   }
 }
 
 const JyankenBox = (props) => {
   return (
-    <Fragment>
-      <button onClick={() => props.actionPon(0)}>👊グー</button>
-      <button onClick={() => props.actionPon(1)}>✌️チョキ</button>
-      <button onClick={() => props.actionPon(2)}>🖐パー</button>
-    </Fragment>
+    <div>
+      <RaisedButton label='👊グー' onClick={() => props.actionPon(0)} />
+      <RaisedButton label='✌️チョキ' onClick={() => props.actionPon(1)} />
+      <RaisedButton label='🖐パー' onClick={() => props.actionPon(2)} />
+    </div>
   )
 }
 
@@ -55,27 +75,76 @@ JyankenBox.propTypes = {
   actionPon: PropTypes.func.isRequired
 }
 
-const ScoreBox = (props) => {
-  const HANDS = ['👊グー', '✌️チョキ', '🖐パー']
-  const JUDGMENTS = ['引き分け', '勝ち', '負け']
-
+const ScoreList = (props) => {
   return (
-    <table>
-      <tbody>
-        <tr>
-          <th>あなた</th><td>{HANDS[props.human]}</td>
-          <th>コンピュータ</th><td>{HANDS[props.computer]}</td>
-          <th>勝敗</th><td>{JUDGMENTS[props.judgment]}</td>
-        </tr>
-      </tbody>
-    </table>
+    <Table>
+      <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
+        <TableRow>
+          <TableHeaderColumn>時間</TableHeaderColumn>
+          <TableHeaderColumn>人間</TableHeaderColumn>
+          <TableHeaderColumn>コンピューター</TableHeaderColumn>
+          <TableHeaderColumn>結果</TableHeaderColumn>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {props.scores.map((score, i) => <ScoreListItem key={i} score={score} />)}
+      </TableBody>
+    </Table>
   )
 }
 
-ScoreBox.propTypes = {
-  human: PropTypes.number,
-  computer: PropTypes.number,
-  judgment: PropTypes.number
+ScoreList.propTypes = {
+  scores: PropTypes.array
+}
+
+const ScoreListItem = (props) => {
+  const HANDS = ['👊グー', '✌️チョキ', '🖐パー']
+  const JUDGMENTS = ['引き分け', '勝ち', '負け']
+  const dateHHMMSS = d => d.toTimeString().substr(0, 8)
+
+  return (
+    <TableRow style={judgmentStyle(props.score.judgment || 0)}>
+      <TableRowColumn>{dateHHMMSS(props.score.createdAt)}</TableRowColumn>
+      <TableRowColumn>{HANDS[props.score.human]}</TableRowColumn>
+      <TableRowColumn>{HANDS[props.score.computer]}</TableRowColumn>
+      <TableRowColumn>{JUDGMENTS[props.score.judgment]}</TableRowColumn>
+    </TableRow>
+  )
+}
+
+ScoreListItem.propTypes = {
+  score: PropTypes.object
+}
+
+const StatusBox = (props) => {
+  return (
+    <Table>
+      <TableBody displayRowCheckbox={false}>
+        <TableRow displayBorder={false}>
+          <TableHeaderColumn>勝ち</TableHeaderColumn>
+          <TableRowColumn style={judgmentStyle(1)}>{props.status.win}</TableRowColumn>
+        </TableRow>
+        <TableRow displayBorder={false}>
+          <TableHeaderColumn>負け</TableHeaderColumn>
+          <TableRowColumn style={judgmentStyle(2)}>{props.status.lose}</TableRowColumn>
+        </TableRow>
+        <TableRow displayBorder={false}>
+          <TableHeaderColumn>引き分け</TableHeaderColumn>
+          <TableRowColumn style={judgmentStyle(0)}>{props.status.draw}</TableRowColumn>
+        </TableRow>
+      </TableBody>
+    </Table>
+  )
+}
+
+StatusBox.propTypes = {
+  status: PropTypes.object
+}
+
+const judgmentStyle = judgment => {
+  return (
+    {color: ['#000', '#2979ff', '#ff1744'][judgment]}
+  )
 }
 
 class MoneyBook extends Component {
