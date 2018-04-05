@@ -9,7 +9,7 @@ import Paper from 'material-ui/Paper'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
 
-class JyankenGamePage extends Component {
+class JyankenGame extends Component {
   constructor(props) {
     super(props)
 
@@ -355,9 +355,9 @@ Title.propTypes = {
 ReactDOM.render(
   <BrowserRouter>
     <Switch>
-      <Route path='/moneybookPage' component={MoneyBook} />
-      <Route path='/jyankenGamePage' component={JyankenGamePage} />
-      <Route component={() => <Redirect to='/jyankenGamePage' />} />
+      <Route path='/moneyBook' component={MoneyBook} />
+      <Route path='/jyankenGame' component={JyankenGame} />
+      <Route component={() => <Redirect to='/jyankenGame' />} />
     </Switch>
   </BrowserRouter>,
   document.getElementById('root')
