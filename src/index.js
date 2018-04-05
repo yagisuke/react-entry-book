@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
 import Jyanken from './Jyanken'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -352,9 +353,12 @@ Title.propTypes = {
 }
 
 ReactDOM.render(
-  <Fragment>
-    <JyankenGamePage />
-    <MoneyBook />
-  </Fragment>,
+  <BrowserRouter>
+    <Switch>
+      <Route path='/moneybookPage' component={MoneyBook} />
+      <Route path='/jyankenGamePage' component={JyankenGamePage} />
+      <Route component={() => <Redirect to='/jyankenGamePage' />} />
+    </Switch>
+  </BrowserRouter>,
   document.getElementById('root')
 )
