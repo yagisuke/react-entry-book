@@ -8,6 +8,14 @@ import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
+import { List, ListItem } from 'material-ui/List'
+import DropDownMenu from 'material-ui/DropDownMenu'
+import MenuItem from 'material-ui/MenuItem'
+import RefreshIndicator from 'material-ui/RefreshIndicator'
+import WeatherIcon from 'material-ui/svg-icons/image/wb-sunny'
+import TemperatureIcon from 'material-ui/svg-icons/editor/show-chart'
+
 
 class JyankenGame extends Component {
   constructor(props) {
@@ -57,6 +65,7 @@ class JyankenGame extends Component {
             <Route path='/jyankenGame/status' component={() => <StatusBox status={this.state.status} />} />
             <Route exact path='/jyankenGame' component={() => <Redirect to='/jyankenGame/scores' />} />
           </Paper>
+          <Footer />
         </div>
       </MuiThemeProvider>
     )
@@ -191,6 +200,7 @@ class MoneyBook extends Component {
         <MoneyBookList books={this.state.books} />
         <MoneyEntry add={(date, item, amount) => this.addBook(date, item, amount)} />
         <MoneyEntry2 add={(date, item, amount) => this.addBook(date, item, amount)} />
+        <Footer />
       </Fragment>
     )
   }
@@ -349,14 +359,127 @@ MoneyEntry2.propTypes = {
   add: PropTypes.func.isRequired
 }
 
-const Title = (props) => {
+class Weather extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      placeName: null,
+      weather: null,
+      temperature: null,
+      loading: false
+    }
+
+    this.Places = [
+      { name: '札幌', id: 2128295 },
+      { name: '東京', id: 1850147 },
+      { name: '大阪', id: 1853909 },
+      { name: '沖縄', id: 1894616 }
+    ]
+
+    this.OpenWeatherMapKey ='66deddadca5c2aab305f4b838e9db87f'
+  }
+
+  selectPlace(index) {
+    if (index > 0) {
+      const place = this.Places[index - 1]
+      this.setState({
+        placeName: place.name,
+        weather: null,
+        temperature: null,
+        loading: true
+      })
+      this.getWeather(place.id)
+    }
+  }
+
+  getWeather(cityId) {
+    const delay = (mSec) => new Promise((resolve) => setTimeout(resolve, mSec))
+
+    fetch(`http://api.openweathermap.org/data/2.5/weather?id=${cityId}&appid=${this.OpenWeatherMapKey}&lang=ja&units=metric`)
+    .then((response) => response.json())
+    .then((json) => {
+      delay(700)
+      .then(() => this.setState({
+        weather: json.weather[0].description,
+        temperature: json.main.temp,
+        loading: false
+      }))
+    })
+    .catch((response) => {
+      this.setState({ loading: false })
+      console.log('*** ERROR ***', response)
+    })
+  }
+
+  render() {
+    return (
+      <MuiThemeProvider>
+        <div>
+          <Card style={{margin: 30}}>
+            <CardHeader title={<WeatherTitle placeName={this.state.placeName} />} />
+            <CardText style={{ position: 'relative' }}>
+              <RefreshIndicator status={this.state.loading ? 'loading' : 'hide' } top={40} left={100} loadingColor='#f00' />
+              <WeatherInfomation weather={this.state.weather} temperature={this.state.temperature} />
+            </CardText>
+            <CardActions>
+              <PlaceSelector places={this.Places} actionSelect={(i) => this.selectPlace(i)} />
+            </CardActions>
+          </Card>
+          <Footer />
+        </div>
+      </MuiThemeProvider>
+    )
+  }
+}
+
+const WeatherTitle = (props) => <Title>{props.placeName ? `${props.placeName}の天気` : '天気情報'}</Title>
+
+WeatherTitle.propTypes = {
+  placeName: PropTypes.string
+}
+
+const WeatherInfomation = (props) => {
   return (
-    <h1>{props.children}</h1>
+    <List>
+      <ListItem leftIcon={<WeatherIcon />} primaryText={props.weather} />
+      <ListItem leftIcon={<TemperatureIcon />} primaryText={props.temperature ? `${props.temperature} ℃` : ''} />
+    </List>
   )
 }
 
+WeatherInfomation.propTypes = {
+  weather: PropTypes.string,
+  temperature: PropTypes.number
+}
+
+const PlaceSelector = (props) => {
+  return (
+    <DropDownMenu value={-1} onChange={(event, i) => props.actionSelect(i)}>
+      <MenuItem value={-1} primaryText='場所を選択' />
+      {props.places.map((place, i) => <MenuItem key={i} value={i} primaryText={place.name} />)}
+    </DropDownMenu>
+  )
+}
+
+PlaceSelector.propTypes = {
+  places: PropTypes.array,
+  actionSelect: PropTypes.func.isRequired
+}
+
+const Title = (props) => <h1>{props.children}</h1>
+
 Title.propTypes = {
   children: PropTypes.string.isRequired
+}
+
+const Footer = () => {
+  return (
+    <Fragment>
+      <Link to='/moneyBook'>moneyBook</Link>
+      <Link to='/jyankenGame'>jyankenGame</Link>
+      <Link to='/weather'>weather</Link>
+    </Fragment>
+  )
 }
 
 ReactDOM.render(
@@ -364,7 +487,7 @@ ReactDOM.render(
     <Switch>
       <Route path='/moneyBook' component={MoneyBook} />
       <Route path='/jyankenGame' component={JyankenGame} />
-      <Route component={() => <Redirect to='/jyankenGame' />} />
+      <Route path='/weather' component={Weather} />
     </Switch>
   </BrowserRouter>,
   document.getElementById('root')
