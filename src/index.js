@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter, Switch, Route, Redirect, Link } from 'react-router-dom'
 import Jyanken from './Jyanken'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import FlatButton from 'material-ui/FlatButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
-import { Tabs, Tab } from 'material-ui/Tabs'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
 
 class JyankenGame extends Component {
@@ -16,17 +16,11 @@ class JyankenGame extends Component {
     this.jyanken = new Jyanken()
     this.state = {
       scores: [],
-      status: {},
-      tabIndex: 0
+      status: {}
     }
   }
 
   componentDidMount() {
-    this.getResult()
-  }
-
-  tabChange(i) {
-    this.setState({tabIndex: i})
     this.getResult()
   }
 
@@ -41,25 +35,38 @@ class JyankenGame extends Component {
   }
 
   render() {
+    const tabStyle = { width: 200, height: 50, textAlign: 'center', color: '#fff', backgroundColor: '#01bcd4' }
+    const activeStyle = (path) => {
+      const active = this.props.location.pathname.match(path)
+      return Object.assign({ borderBottom: `solid 2px ${active ? '#f00' : '#01bcd4'}` }, tabStyle)
+    }
+
     return (
       <MuiThemeProvider>
         <div>
           <Title>じゃんけん PON!!</Title>
           <JyankenBox actionPon={(hand) => this.pon(hand)} />
-          <Paper style={{width: 600}} zDepth={2}>
-            <Tabs value={this.state.tabIndex} onChange={ix => this.tabChange(ix)}>
-              <Tab label='対戦結果' value={0}>
-                <ScoreList scores={this.state.scores} />
-              </Tab>
-              <Tab label='対戦成績' value={1}>
-                <StatusBox status={this.state.status} />
-              </Tab>
-            </Tabs>
+          <Paper style={{width: 400}} zDepth={2}>
+            <Link to='/jyankenGame/scores'>
+              <FlatButton label='対戦結果' style={activeStyle('scores')} />
+            </Link>
+            <Link to='/jyankenGame/status'>
+              <FlatButton label='対戦成績' style={activeStyle('status')} />
+            </Link>
+            <Route path='/jyankenGame/scores' component={() => <ScoreList scores={this.state.scores} />} />
+            <Route path='/jyankenGame/status' component={() => <StatusBox status={this.state.status} />} />
+            <Route exact path='/jyankenGame' component={() => <Redirect to='/jyankenGame/scores' />} />
           </Paper>
         </div>
       </MuiThemeProvider>
     )
   }
+}
+
+JyankenGame.propTypes = {
+  location: PropTypes.shape({
+    pathname: PropTypes.string.isRequired
+  }).isRequired
 }
 
 const JyankenBox = (props) => {
