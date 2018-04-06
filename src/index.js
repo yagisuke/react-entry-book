@@ -16,7 +16,6 @@ import RefreshIndicator from 'material-ui/RefreshIndicator'
 import WeatherIcon from 'material-ui/svg-icons/image/wb-sunny'
 import TemperatureIcon from 'material-ui/svg-icons/editor/show-chart'
 
-
 class JyankenGame extends Component {
   constructor(props) {
     super(props)
@@ -488,6 +487,7 @@ ReactDOM.render(
       <Route path='/moneyBook' component={MoneyBook} />
       <Route path='/jyankenGame' component={JyankenGame} />
       <Route path='/weather' component={Weather} />
+      <Route component={() => <Redirect to='/jyankenGame' />} />
     </Switch>
   </BrowserRouter>,
   document.getElementById('root')
