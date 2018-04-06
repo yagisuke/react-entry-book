@@ -54,10 +54,10 @@ class JyankenGame extends Component {
           <Title>じゃんけん PON!!</Title>
           <JyankenBox actionPon={(hand) => this.pon(hand)} />
           <Paper style={{width: 400}} zDepth={2}>
-            <Link to='/jyankenGame/scores'>
+            <Link to='/jyankenGame/scores' class='test-tab-scores'>
               <FlatButton label='対戦結果' style={activeStyle('scores')} />
             </Link>
-            <Link to='/jyankenGame/status'>
+            <Link to='/jyankenGame/status' class='test-tab-status'>
               <FlatButton label='対戦成績' style={activeStyle('status')} />
             </Link>
             <Route path='/jyankenGame/scores' component={() => <ScoreList scores={this.state.scores} />} />
@@ -80,9 +80,9 @@ JyankenGame.propTypes = {
 const JyankenBox = (props) => {
   return (
     <div>
-      <RaisedButton label='👊グー' onClick={() => props.actionPon(0)} />
-      <RaisedButton label='✌️チョキ' onClick={() => props.actionPon(1)} />
-      <RaisedButton label='🖐パー' onClick={() => props.actionPon(2)} />
+      <RaisedButton label='👊グー' onClick={() => props.actionPon(0)} class='test-btn-guu' />
+      <RaisedButton label='✌️チョキ' onClick={() => props.actionPon(1)} class='test-btn-choki' />
+      <RaisedButton label='🖐パー' onClick={() => props.actionPon(2)} class='test-btn-paa' />
     </div>
   )
 }
