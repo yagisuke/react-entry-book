@@ -1,6 +1,5 @@
 import assert from 'power-assert'
 import Jyanken from '../src/Jyanken'
-import { equal } from 'assert';
 
 describe('Jyanken', () => {
     const jyanken = new Jyanken()
