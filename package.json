@@ -15,7 +15,12 @@
   },
   "keywords": [
     "react",
-    "webpack"
+    "react router",
+    "material ui",
+    "webpack",
+    "power assert",
+    "mocha",
+    "nightmare"
   ],
   "author": "",
   "license": "ISC",
