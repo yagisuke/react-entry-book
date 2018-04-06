@@ -1,11 +1,10 @@
 export default class Jyanken {
     constructor() {
         this.scores = []
-        this.statuses = [0, 0, 0]
+        this.statuses = [0, 0, 0] // [draw, win, lose]
     }
 
-    pon(humanHand) {
-        const computerHand = Math.floor(Math.random() * 3)
+    pon(humanHand, computerHand = Math.floor(Math.random() * 3)) {
         const judgment = (computerHand - humanHand + 3) % 3
 
         this.scores.push({
@@ -18,9 +17,7 @@ export default class Jyanken {
     }
 
     getScores() {
-        return (
-            this.scores.slice().reverse()
-        )
+        return this.scores.slice().reverse()
     }
 
     getStatuses() {
